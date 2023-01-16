@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <title>Car Price Predictors</title>
+</head>
+
+<body class="bg-dark" style="width:60%; height:100%; margin:auto">
+  <div class="row">
+    <div class="card mt-50" style="width:98%; height: 100%; margin: auto">
+      <div class="card-header">
+          <div class="col-12" style="text-align:center">
+            <div class="Welcome_text" style="color:black">Welcome to Car Price Predictors</div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="car_body">
+    <form method="post"  accept-charset="utf-8">
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select brand</b></label>
+        <select class="selectpicker form-control" id="brand" name="brand" required="1" onchange="load_car_name(this.id,'car_name')">
+
+          {% for brand in brand %}
+            <option value="{{brand}}">{{brand}}</option>
+          {% endfor %}
+
+          <option value=""></option>
+        </select>
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select Car Name</b></label>
+        <select class="selectpicker form-control" id="car_name" name="car_name" required="1">
+
+          {% for car_name in car_name %}
+            <option value="{{car_name}}">{{car_name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select model</b></label>
+        <select class="selectpicker form-control" id="model" name="model" required="1">
+
+          {% for model in model %}
+            <option value="{{model}}">{{model}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select min_cost_price</b></label>
+        <input type="text" class="form-control" id="min_cost_price" name="min_cost_price" placeholder="Enter the Minimum price for your Car">
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select max_cost_price</b></label>
+        <input type="text" class="form-control" id="max_cost_price" name="max_cost_price" placeholder="Enter the Maximum price for your Car">
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select vehicle_age</b></label>
+        <input type="text" class="form-control" id="vehicle_age" name="vehicle_age" placeholder="Enter the vehicle age">
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Enter the kilo meter driven</b></label>
+        <input class="form-control" type="text" id="km_driven" name="km_driven" placeholder="Enter the kilometer driven">
+        </select>
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select seller_type</b></label>
+        <select class="selectpicker form-control" id="seller_type" name="seller_type" required="1">
+          {% for seller_type in seller_type %}
+            <option value="{{seller_type}}">{{seller_type}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select fuel_type</b></label>
+        <select class="selectpicker form-control" id="fuel_type" name="fuel_type" required="1">
+          {% for fuel_type in fuel_type %}
+            <option value="{{fuel_type}}">{{fuel_type}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select transmission_type</b></label>
+        <select class="selectpicker form-control" id="transmission_type" name="transmission_type" required="1">
+          {% for transmission_type in transmission_type %}
+            <option value="{{transmission_type}}">{{transmission_type}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Enter the mileage in km</b></label>
+        <input class="form-control" type="text" id="mileage" name="mileage" placeholder="Enter the Mileage">
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select engine</b></label>
+        <input class="form-control" type="text" id="engine" name="engine" placeholder="Enter the Engine CC">
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select max_power</b></label>
+        <input class="form-control" type="text" id="max_power" name="max_power" placeholder="Enter the max_power">
+      </div>
+
+      <div class="col-18 form-group" style="text-align:center">
+        <label><b>Select seats</b></label>
+        <input class="form-control" type="text" id="seats" name="seats" placeholder="Enter the number of seats">
+      </div>
+
+      <button class="btn btn-primary form-control" onclick="send_data()">Predict Price</button>
+    </form>
+
+    <br>
+    <div class="row">
+      <div class="col-12" style="text-align:center">
+        <h2>
+          <span id="predictions"></span>
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function load_car_name(brand_id,car_name_id)
+    {
+      var brand = document.getElementById(brand_id);
+      var car_name = document.getElementById(car_name_id);
+      car_name.value="";
+      car_name.innerHTML="";
+      
+
+      {% for brand in brand %}
+
+        if(brand.value == "{{brand}}")
+        {
+          {% for car_name in car_name %}
+
+            {% if brand in car_name %}
+
+              var Newoption = document.createElement("option");
+              Newoption.value = "{{ car_name }}";
+              Newoption.innerHTML = "{{ car_name }}";
+              car_name.options.add(Newoption);
+
+            {% endif %}
+
+          {% endfor %}
+        }
+
+      {% endfor %}
+
+    }
+
+    function form_handler(event)
+    {
+      event.preventDefault();
+    }
+
+    function send_data()
+    {
+      document.querySelector('form').addEventListener('submit',form_handler);
+
+      var fd = new FormData(document.querySelector('form'));
+
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('POST', '/predict', true);
+      document.getElementById("predictions").innerHTML="Wait for few seconds......";
+
+      xhr.onreadystatechange=function()
+      {
+        if(xhr.readyState==XMLHttpRequest.DONE)
+        {
+          document.getElementById("predictions").innerHTML="Prediction : Rupees "+xhr.responseText;
+        }
+      }
+
+      xhr.onload=function(){};
+      xhr.send(fd);
+    }
+
+  </script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
